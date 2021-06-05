@@ -1,4 +1,4 @@
-require_relative '../lib/atm.rb'
+require_relative '../lib/atm'
 require 'date'
 
 describe Atm do
@@ -22,18 +22,18 @@ describe Atm do
   end
 
   it 'allow withdraw if the account has enough balance.' do
-    expected_output = { status: true, message: 'success', date: Date.today, amount: 45 }
-    expect(subject.withdraw(45,'1234', account)).to eq expected_output
+    expected_output = { status: true, message: 'success', date: Date.today, amount: 45, bills: [20, 20, 5] }
+    expect(subject.withdraw(45, '1234', account)).to eq expected_output
   end
 
   it 'rejects withdraw if account has insufficient funds' do
     expected_output = { status: false, message: 'insuificent funds in account', date: Date.today }
-    expect(subject.withdraw(105,'1234', account)).to eq expected_output
+    expect(subject.withdraw(105, '1234', account)).to eq expected_output
   end
   it 'rejects withdrawl if ATM has insuificient funds' do
     subject.funds = 30
     expected_output = { status: false, message: 'insuificient funds in ATM', date: Date.today }
-    expect(subject.withdraw(100,'1234', account)).to eq expected_output
+    expect(subject.withdraw(100, '1234', account)).to eq expected_output
   end
 
   it 'reject withdraw if pin is wrong' do
@@ -48,7 +48,7 @@ describe Atm do
   end
   it 'reject withdraw if the account is inactive' do
     allow(account).to receive(:account_status).and_return(:disabled)
-    expected_output = { status:false, message: 'account disabled', date: Date.today }
-    expect(subject.withdraw(6, '1234', account)).to eq expected_output 
+    expected_output = { status: false, message: 'account disabled', date: Date.today }
+    expect(subject.withdraw(6, '1234', account)).to eq expected_output
   end
 end

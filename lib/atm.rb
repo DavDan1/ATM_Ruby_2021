@@ -27,7 +27,7 @@ class Atm
     amount > account.balance
   end
 
-  def insufficient_funds_in_atm?(amount, account)
+  def insufficient_funds_in_atm?(amount, _account)
     @funds < amount
   end
 
@@ -46,6 +46,18 @@ class Atm
   def perform_transaction(amount, account)
     @funds -= amount
     account.balance = account.balance - amount
-    { status: true, message: 'success', date: Date.today, amount: amount }
+    { status: true, message: 'success', date: Date.today, amount: amount, bills: add_bills(amount) }
+  end
+
+  def add_bills(amount)
+    denominations = [20, 10, 5]
+    bills = []
+    denominations.each do |bill|
+      while amount - bill >= 0
+        amount -= bill
+        bills << bill
+      end
+    end
+    bills
   end
 end
