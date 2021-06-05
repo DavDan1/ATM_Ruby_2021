@@ -1,8 +1,8 @@
-require_relative '../lib/atm'
+require_relative '../lib/atm.rb'
 require 'date'
 
 describe Atm do
-  let(:account) { instance_double('Account', pin_code: '1234', exp_date: '04/18') }
+  let(:account) { instance_double('Account', pin_code: '1234', exp_date: '04/22', account_status: :active) }
   before do
     allow(account).to receive(:balance).and_return(100)
     allow(account).to receive(:balance=)
@@ -23,17 +23,17 @@ describe Atm do
 
   it 'allow withdraw if the account has enough balance.' do
     expected_output = { status: true, message: 'success', date: Date.today, amount: 45 }
-    expect(subject.withdraw(45, account)).to eq expected_output
+    expect(subject.withdraw(45,'1234', account)).to eq expected_output
   end
 
   it 'rejects withdraw if account has insufficient funds' do
-    expected_output = { status: false, message: 'insufficient funds', date: Date.today }
-    expect(subject.withdraw(105, account)).to eq expected_output
+    expected_output = { status: false, message: 'insuificent funds in account', date: Date.today }
+    expect(subject.withdraw(105,'1234', account)).to eq expected_output
   end
   it 'rejects withdrawl if ATM has insuificient funds' do
     subject.funds = 30
     expected_output = { status: false, message: 'insuificient funds in ATM', date: Date.today }
-    expect(subject.withdraw(100, accouunt)).to eq expected_output
+    expect(subject.withdraw(100,'1234', account)).to eq expected_output
   end
 
   it 'reject withdraw if pin is wrong' do
@@ -45,5 +45,10 @@ describe Atm do
     allow(account).to receive(:exp_date).and_return('12/15')
     expected_output = { status: false, message: 'card expired', date: Date.today }
     expect(subject.withdraw(6, '1234', account)).to eq expected_output
+  end
+  it 'reject withdraw if the account is inactive' do
+    allow(account).to receive(:account_status).and_return(:disabled)
+    expected_output = { status:false, message: 'account disabled', date: Date.today }
+    expect(subject.withdraw(6, '1234', account)).to eq expected_output 
   end
 end
