@@ -1,3 +1,4 @@
+require './lib/person'
 require './lib/atm'
 require './lib/account'
 require 'date'
@@ -70,7 +71,8 @@ describe Person do
   end
 
   describe 'can not manage funds if no account been created' do
-    # let(:atm) { Atm.new }
+    let(:atm) { Atm.new } # didn't have it in documentation, but why not??
+
     it 'can\'t deposit funds' do
       expect { subject.deposit(100, atm) }.to raise_error(RuntimeError, 'No account present')
     end
