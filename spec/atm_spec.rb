@@ -2,7 +2,7 @@ require_relative '../lib/atm'
 require 'date'
 
 describe Atm do
-  let(:account) { instance_double('Account') }
+  let(:account) { instance_double('Account', pin_code: '1234') }
   before do
     allow(account).to receive(:balance).and_return(100)
     allow(account).to receive(:balance=)
@@ -17,7 +17,7 @@ describe Atm do
   end
 
   it 'funds are reduced at withdraw' do
-    subject.withdraw(50)
+    subject.withdraw(50, '1234', account)
     expect(subject.funds).to eq 950
   end
 
@@ -29,5 +29,15 @@ describe Atm do
   it 'rejects withdraw if account has insufficient funds' do
     expected_output = { status: false, message: 'insufficient funds', date: Date.today }
     expect(subject.withdraw(105, account)).to eq expected_output
+  end
+  it 'rejects withdrawl if ATM has insuificient funds' do
+    subject.funds = 30
+    expected_output = { status: false, message: 'insuificient funds in ATM', date: Date.today }
+    expect(subject.withdraw(100, accouunt)).to eq expected_output
+  end
+
+  it 'reject withdraw if pin is wrong' do
+    expected_output = { status: false, message: 'wrong pin', date: Date.today }
+    expect(subject.withdraw(50, 9999, account)).to eq expected_output
   end
 end
