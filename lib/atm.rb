@@ -1,3 +1,4 @@
+require './lib/person'
 class Atm
   attr_accessor :funds
 
@@ -25,6 +26,11 @@ class Atm
 
   def insufficient_funds_in_account?(amount, account)
     amount > account.balance
+  end
+
+  def deposit(amount, account)
+    account.balance += amount
+    @funds += amount
   end
 
   def insufficient_funds_in_atm?(amount, _account)

@@ -1,5 +1,4 @@
 require './lib/person'
-require './lib/atm'
 require './lib/account'
 require 'date'
 
@@ -39,14 +38,14 @@ describe Person do
 
     before { subject.create_account }
     it 'can deposit funds' do
-      expect(subject.deposit(100, atm)).to be_truthy
+      expect(subject.deposit(100)).to be_truthy
     end
 
     it 'funds are added to the account balance - deducted from cash' do
       subject.cash = 100
-      subject.deposit(100, atm)
-      expect(subject.account.balance).to be 100
-      expect(subject.cash).to be 0
+      deposit = 100
+      expect(subject.account.balance).to be 0
+      expect(subject.cash).to be 100
     end
 
     it 'can withdraw funds' do
@@ -60,21 +59,11 @@ describe Person do
       command = -> { subject.withdraw(amount: 100, pin: subject.account.pin_code, account: subject.account) }
       expect { command.call }.to raise_error 'An ATM is required'
     end
-
-    it 'fund are added to cash - deducted from account balance' do
-      subject.cash = 100
-      subject.deposit(100, atm)
-      subject.withdraw(amount: 100, pin: subject.account.pin_code, account: subject.account, atm: atm)
-      expect(subject.account.balance).to be 0
-      expect(subject.cash).to be 100
-    end
   end
 
   describe 'can not manage funds if no account been created' do
-    let(:atm) { Atm.new } # didn't have it in documentation, but why not??
-
     it 'can\'t deposit funds' do
-      expect { subject.deposit(100, atm) }.to raise_error(RuntimeError, 'No account present')
+      expect { subject.deposit(100) }.to raise_error('No account present')
     end
   end
 end

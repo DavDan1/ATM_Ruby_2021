@@ -1,7 +1,6 @@
 require 'pry'
 require './lib/account'
 require './lib/atm'
-require 'date'
 
 class Person
   attr_accessor :name, :cash, :account
@@ -20,7 +19,7 @@ class Person
     obj.nil? ? missing_name : @name = obj
   end
 
-  def deposit(amount, atm)
+  def deposit(amount)
     if @account.nil?
       raise 'No account present'
     else
@@ -35,14 +34,7 @@ class Person
     if atm.nil?
       raise 'An ATM is required'
     else
-      response = atm.withdraw(attrs[:amount], attrs[:pin], attrs[:account])
-      if response[:status] == true
-        @cash += attrs[:amount]
-        @account.balance -= attrs[:amount]
-        response
-      else
-        response
-      end
+      atm.withdraw(attrs[:amount], attrs[:pin_code], attrs[:account])
     end
   end
 
